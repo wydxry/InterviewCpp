@@ -3,18 +3,18 @@
 ​广义上讲，STL分为3类：Algorithm（算法）、Container（容器）和Iterator（迭代器），容器和算法通过迭代器可以进行无缝地连接。
 ​详细的说，STL由6部分组成：容器(Container)、算法（Algorithm）、 迭代器（Iterator）、仿函数（Function object）、适配器（Adaptor）、空间配制器（Allocator）。
 标准模板库STL主要由6大组成部分：
-容器(Container)
+1. 容器(Container)
 ​是一种数据结构， 如list, vector, 和deques，以模板类的方法提供。为了访问容器中的数据，可以使用由容器类输出的迭代器。
-[STL的容器种类](/img/container.png)
-算法（Algorithm）
+![STL的容器种类](/img/container.png)
+2. 算法（Algorithm）
 ​是用来操作容器中的数据的模板函数。例如，STL用sort()来对一 个vector中的数据进行排序，用find()来搜索一个list中的对象， 函数本身与他们操作的数据的结构和类型无关，因此他们可以用于从简单数组到高度复杂容器的任何数据结构上。
-迭代器（Iterator）
+3. 迭代器（Iterator）
 ​提供了访问容器中对象的方法。例如，可以使用一对迭代器指定list或vector中的一定范围的对象。 迭代器就如同一个指针。事实上，C++ 的指针也是一种迭代器。 但是，迭代器也可以是那些定义了operator*()以及其他类似于指针的操作符方法的类对象;
-仿函数（Function object）
+4. 仿函数（Function object）
 ​仿函数又称之为函数对象， 其实就是重载了操作符的struct,没有什么特别的地方。
-适配器（Adaptor）
+5. 适配器（Adaptor）
 简单的说就是一种接口类，专门用来修改现有类的接口，提供一中新的接口；或调用现有的函数来实现所需要的功能。主要包括3中适配器Container Adaptor、Iterator Adaptor、Function Adaptor。
-空间配制器（Allocator）
+6. 空间配制器（Allocator）
 ​为STL提供空间配置的系统。其中主要工作包括两部分：
 （1）对象的创建与销毁；
 （2）内存的获取与释放。
@@ -35,13 +35,13 @@ unordered_set容器采用哈希表实现。
 删除: O(1)，最坏情况O(N)
 
 ## map和unordered_map异同，增删时间复杂度
-1.需要引入的头文件不同
+1. 需要引入的头文件不同
 map: #include <map>
 unordered_map: #include <unordered_map>
-2.内部实现机理不同
+2. 内部实现机理不同
 map: 红黑树 具有自动排序的功能，是非严格的二叉搜索树。map内部的所有元素都是有序的，使用中序遍历可将键值按照从小到大遍历出来。
 unordered_map: 哈希表（也叫散列表，通过关键码值映射到Hash表中一个位置来访问记录，查找的复杂度是O(1)。 无序的 （海量数据广泛应用）。
-3.优缺点以及适用处
+3. 优缺点以及适用处
 map：
 优点：有序性，内部实现的红黑树的查找，插入和删除的复杂度都是O(logn),因此效率非常高。
 缺点：空间占用率高，因为map内部实现了红黑树，虽然提高了运行效率，但是因为每一个节点都需要额外保存父节点，孩子节点和红。黑性质，使得每一个节点都占用大量的空间。
