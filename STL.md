@@ -106,3 +106,197 @@ map、unordered_map 是 C++ STL 中的两个容器，它们的区别有：
 2. 原理及特点 map：内部实现了一个红黑树，该结构具有自动排序的功能，因此 map 内部的所有元素都是有序的，红黑树的每一个节点都代表着 map 的一个元素，因此，对于 map 进行的查找，删除，添加等一系列的操作都相当于是对红黑树进行这样的操作，故红黑树的效率决定了 map 的效率。 unordered_map：内部实现了一个哈希表，因此其元素的排列顺序是杂乱的，无序的。
 3. map有序存储，底层是红黑树实现；unorderd_map无序存储，底层是哈希表实现。
 
+##  push_back 和 emplace_back 的区别
+ 如果要将一个临时变量push到容器的末尾，push_back()需要先构造临时对象，再将这个对象拷贝到容器的末尾，而emplace_back()则直接在容器的末尾构造对象，这样就省去了拷贝的过程。
+ ```C++
+#include <iostream>
+#include <cstring>
+#include <vector>
+using namespace std;
+
+class A
+{
+public:
+    A(int i)
+    {
+        cout << "构造函数"<< endl;
+        cout << i << endl;
+    }
+    ~A() {}
+    A(const A &a)
+    {
+        cout << "拷贝构造" << endl;
+    }
+
+public:
+    string str;
+};
+
+int main()
+{
+    vector<A> vec;
+    vec.reserve(10);
+    for (int i = 0; i < 10; i++)
+    {
+        vec.push_back(i); //调用了10次构造函数和10次拷贝构造函数
+        // vec.emplace_back(i); //调用了10次构造函数一次拷贝构造函数都没有调用过
+    }
+}
+ ```
+
+ ## vector 和 list 的区别，分别适用于什么场景？
+ ​vector和list区别在于底层实现机理不同，因而特性和适用场景也有所不同。
+
+​ vector：一维数组
+
+​ 特点：元素在内存连续存放，动态数组，在堆中分配内存，元素连续存放，有保留内存，如果减少大小后内存也不会释放。
+
+​ 优点：和数组类似开辟一段连续的空间，并且支持随机访问，所以它的查找效率高其时间复杂度O(1)。
+
+​ 缺点：由于开辟一段连续的空间，所以插入删除会需要对数据进行移动比较麻烦，时间复杂度O（n），另外当空间不足时还需要进行扩容。
+
+​ list：双向链表
+
+​ 特点：元素在堆中存放，每个元素都是存放在一块内存中，它的内存空间可以是不连续的，通过指针来进行数据的访问。
+
+​ 优点：底层实现是循环双链表，当对大量数据进行插入删除时，其时间复杂度O(1)。
+
+​ 缺点：底层没有连续的空间，只能通过指针来访问，所以查找数据需要遍历其时间复杂度O（n），没有提供[]操作符的重载。
+
+应用场景
+
+​ vector拥有一段连续的内存空间，因此支持随机访问，如果需要高效的随即访问，而不在乎插入和删除的效率，使用vector。
+
+​ list拥有一段不连续的内存空间，如果需要高效的插入和删除，而不关心随机访问，则应使用list。
+
+## vector 与 list 具体是怎么实现的？常见操作的时间复杂度是多少？
+1. vector 一维数组（元素在内存连续存放）
+
+​ 是动态数组，在堆中分配内存，元素连续存放，有保留内存，如果减少大小后，内存也不会释放；如果新增大小当前大小时才会重新分配内存。
+
+​ 扩容方式： 
+ a. 倍放开辟三倍的内存
+
+​ b. 旧的数据开辟到新的内存
+
+​ c. 释放旧的内存
+
+​ d. 指向新内存
+
+2. list 双向链表（元素存放在堆中）
+
+​ 元素存放在堆中，每个元素都是放在一块内存中，它的内存空间可以是不连续的，通过指针来进行数据的访问，这个特点，使得它的随机存取变得非常没有效率，因此它没有提供[ ]操作符的重载。但是由于链表的特点，它可以很有效的支持任意地方的删除和插入操作。
+
+​ 特点：
+ a. 随机访问不方便
+
+​ b. 删除插入操作方便
+
+3. 常见时间复杂度
+
+（1）vector插入、查找、删除时间复杂度分别为：O(n)、O(1)、O(n)；
+
+（2）list插入、查找、删除时间复杂度分别为：O(1)、O(n)、O(1)。
+
+## hashtable 扩容和如何解决冲突
+0. 哈希表的扩容
+
+（1）为什么要扩容
+
+​ 使用链地址法封装哈希表时, 填装因子(loaderFactor)会大于1，理论上这种封装的哈希表时可以无限插入数据的但是但是随着数据量的增多，哈希表中的每个元素会变得越来越长， 这是效率会大大降低。 因此，需要通过扩容来提高效率。
+
+（2）如何扩容
+
+​ Hashtable每次扩容，容量都为原来的2倍加1，而HashMap为原来的2倍。此时，需要将所有数据项都进行修改(需要重新调用哈希函数，来获取新的位置)。 哈希表扩容是一个比较耗时的过程，但是一劳永逸。
+
+（3）什么情况下扩容
+
+​ 常见的情况是在填装因子(loaderFactor) > 0.75是进行扩容。
+
+（4）扩容的代码实现
+
+1. 哈希表的使用
+
+​ Hash表采用一个映射函数f :key -> address 将关键字映射到该记录在表中的存储位置，从而在想要查找该记录时，可以直接根据关键字和映射关系计算出该记录在表中的存储位置，通常情况下，这种映射关系称作为Hash函数，而通过Hash函数和关键字计算出来的存储位置(注意这里的存储位置只是表中的存储位置，并不是实际的物理地址)称作为Hash地址。
+
+2. **哈希函数的设计**
+
+​ Hash函数设计的好坏直接影响到对Hash表的操作效率。通常有以下几种构造Hash函数的方法：
+
+**直接定址法**
+​ 取关键字或者关键字的某个线性函数作为Hash地址，即address(key) = a*key + b。
+
+**平方取中法**
+​ 对关键字进行平方计算，然后取结果的中间几位作为Hash地址，假如有以下关键字序列{421，423，436}，平方之后的结果为{177241，178929，190096}，那么可以取中间的两位数{72，89，00}作为Hash地址。
+
+**折叠法**
+​ 将关键字拆分成几个部分，然后将这几个部分组合在一起，以特定的方式进行转化形成Hash地址。例如假如知道某图书的SBN号为：8903-241-23，可以将address(key)=89+03+24+12+3作为Hash地址。
+
+**除留取余法**
+​ 如果知道Hash表的最大长度为m，可以取不大于m的最大质数p，然后对关键字进行取余运算，address(key)=key % p。
+
+在这里p的选取非常关键，p选择的好的话，能够最大程度地减少冲突，p一般取不大于m的最大质数。
+
+3. 哈希表大小的确定
+
+​ Hash表大小的确定非常关键，如果Hash表的空间远远大于最后实际存储的记录个数，就会造成较大的空间浪费。如果选取小了的话，则容易造成冲突。在实际情况中，一般需要根据最终记录存储个数和关键字的分布特点来确定Hash表的大小。还有一种情况时可能事先不知道最终需要存储的记录个数，则需要动态维护Hash表的容量，此时可能需要重新计算Hash地址。
+
+4. **冲突的解决**
+
+​ 如果产生了Hash冲突，就需要办法来解决，通常有如下两种方法：
+
+**开放定址法**
+​ 即当一个关键字和另一个关键字发生冲突时，使用某种探测技术在Hash表中形成一个探测序列，然后沿着这个探测序列依次查找下去，当碰到一个空的单元时，则插入其中。比较常用的探测方法有线性探测法，比如有一组关键字 {12，13，25，23，38，34，6，84，91}，Hash表长为14，Hash函数为address(key)=key%11 ，当插入12，13，25时可以直接插入，而当插入23时，地址1被占用了，因此沿着地址1依次往下探测(探测步长可以根据情况而定)，直到探测到地址4，发现为空，则将23插入其中。
+
+**链地址法**
+​ 采用数组和链表相结合的办法，将Hash地址相同的记录存储在一张线性表中，而每张表的表头的序号即为计算得到的Hash地址。
+
+5. 需注意的点
+
+（1）Hashtable的默认容量为11，默认负载因子为0.75(HashMap默认容量为16，默认负载因子也是0.75)；
+
+（2）Hashtable的容量可以为任意整数，最小值为1，而HashMap的容量始终为2的n次方；
+
+（3）为避免扩容带来的性能问题，建议指定合理容量；
+
+（4）跟HashMap一样，Hashtable内部也有一个静态类叫Entry，其实是个键值对对象，保存了键和值的引用；
+
+（5）HashMap和Hashtable存储的是键值对对象，而不是单独的键或值。
+
+6. 哈希表的构造函数
+```Java
+public Hashtable(int initialCapacity, float loadFactor) {//可指定初始容量和加载因子  
+        if (initialCapacity < 0)  
+            throw new IllegalArgumentException("Illegal Capacity: "+  
+                                               initialCapacity);  
+        if (loadFactor <= 0 || Float.isNaN(loadFactor))  
+            throw new IllegalArgumentException("Illegal Load: "+loadFactor);  
+        if (initialCapacity==0)  
+            initialCapacity = 1;//初始容量最小值为1  
+        this.loadFactor = loadFactor;  
+        table = new Entry[initialCapacity];//创建桶数组  
+        threshold = (int)Math.min(initialCapacity * loadFactor, MAX_ARRAY_SIZE + 1);//初始化容量阈值  
+        useAltHashing = sun.misc.VM.isBooted() &&  
+                (initialCapacity >= Holder.ALTERNATIVE_HASHING_THRESHOLD);  
+    }  
+    /** 
+     * Constructs a new, empty hashtable with the specified initial capacity 
+     * and default load factor (0.75). 
+     */  
+    public Hashtable(int initialCapacity) {  
+        this(initialCapacity, 0.75f);//默认负载因子为0.75  
+    }  
+    public Hashtable() {  
+        this(11, 0.75f);//默认容量为11，负载因子为0.75  
+    }  
+    /** 
+     * Constructs a new hashtable with the same mappings as the given 
+     * Map.  The hashtable is created with an initial capacity sufficient to 
+     * hold the mappings in the given Map and a default load factor (0.75). 
+     */  
+    public Hashtable(Map<? extends K, ? extends V> t) {  
+        this(Math.max(2*t.size(), 11), 0.75f);  
+        putAll(t);  
+    }
+```
+
