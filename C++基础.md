@@ -410,3 +410,12 @@ int const *a;    //同const int *a;
 int *const a;    //a指针所指向的内存地址不变，即a不变
 const int *const a;   //都不变，即（*a）不变，a也不变
 ```
+
+## 说说const和define的区别
+const用于定义常量；而define用于定义宏，而宏也可以用于定义常量。
+
+都用于常量定义时，它们的区别有：
+1. const生效于编译的阶段；define生效于预处理阶段。
+2. const定义的常量，在C语言中是存储在内存中、需要额外的内存空间的；define定义的常量，运行时是直接的操作数，并不会存放在内存中。
+3. const定义的常量是带类型的；define定义的常量不带类型。因此define定义的常量不利于类型检查。
+
